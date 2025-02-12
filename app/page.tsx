@@ -12,36 +12,40 @@ const generateRandomCode = () => {
 }
 
 export default function EscapeRoom() {
-  const [time, setTime] = useState(() => {
-    const savedTime = localStorage.getItem('escapeRoomTime')
-    return savedTime ? parseInt(savedTime) : 0
-  })
-  
-  const [running, setRunning] = useState(() => {
-    const savedRunning = localStorage.getItem('escapeRoomRunning')
-    return savedRunning ? savedRunning === 'true' : false
-  })
-  
+  const [time, setTime] = useState(0)
+  const [running, setRunning] = useState(false)
   const [code, setCode] = useState("")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [escapeSuccessful, setEscapeSuccessful] = useState(false)
-  
-  const [correctCode, setCorrectCode] = useState(() => {
-    const savedCode = localStorage.getItem('escapeRoomCorrectCode')
-    return savedCode || generateRandomCode()
-  })
-  
+  const [correctCode, setCorrectCode] = useState(generateRandomCode())
   const [showAdmin, setShowAdmin] = useState(false)
   const [adminCode, setAdminCode] = useState("admin123")
   const [adminInput, setAdminInput] = useState("")
   const [adminDialogOpen, setAdminDialogOpen] = useState(false)
+  const [isClient, setIsClient] = useState(false)
 
+  // Handle initial state loading from localStorage
   useEffect(() => {
-    localStorage.setItem('escapeRoomTime', time.toString())
-    localStorage.setItem('escapeRoomRunning', running.toString())
-    localStorage.setItem('escapeRoomCorrectCode', correctCode)
-  }, [time, running, correctCode])
+    setIsClient(true)
+    const savedTime = localStorage.getItem('escapeRoomTime')
+    const savedRunning = localStorage.getItem('escapeRoomRunning')
+    const savedCode = localStorage.getItem('escapeRoomCorrectCode')
+    
+    if (savedTime) setTime(parseInt(savedTime))
+    if (savedRunning) setRunning(savedRunning === 'true')
+    if (savedCode) setCorrectCode(savedCode)
+  }, [])
 
+  // Handle state persistence
+  useEffect(() => {
+    if (isClient) {
+      localStorage.setItem('escapeRoomTime', time.toString())
+      localStorage.setItem('escapeRoomRunning', running.toString())
+      localStorage.setItem('escapeRoomCorrectCode', correctCode)
+    }
+  }, [time, running, correctCode, isClient])
+
+  // Timer effect
   useEffect(() => {
     let timer: NodeJS.Timeout
     if (running) {
@@ -55,7 +59,6 @@ export default function EscapeRoom() {
       setTime(0)
       setRunning(true)
       setCode("")
-      // Removed code generation from here since the code should stay the same
     }
   }
 
@@ -63,7 +66,6 @@ export default function EscapeRoom() {
     if (code === correctCode) {
       setRunning(false)
       setEscapeSuccessful(true)
-      // Generate new code only after successful escape
       setCorrectCode(generateRandomCode())
     } else {
       setEscapeSuccessful(false)
@@ -75,7 +77,9 @@ export default function EscapeRoom() {
     setDialogOpen(open)
     if (!open && escapeSuccessful) {
       setTime(0)
-      localStorage.setItem('escapeRoomTime', '0')
+      if (isClient) {
+        localStorage.setItem('escapeRoomTime', '0')
+      }
     }
   }
 
@@ -106,11 +110,13 @@ export default function EscapeRoom() {
   const handleGenerateNewCode = () => {
     const newCode = generateRandomCode()
     setCorrectCode(newCode)
-    localStorage.setItem('escapeRoomCorrectCode', newCode)
+    if (isClient) {
+      localStorage.setItem('escapeRoomCorrectCode', newCode)
+    }
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-[url('/old-market-bg.jpg')] bg-cover bg-center">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6">
       {showAdmin && (
         <Card className="absolute top-4 left-4 bg-stone-100/90 backdrop-blur-sm border-red-600/30">
           <CardHeader>
@@ -222,7 +228,7 @@ export default function EscapeRoom() {
       </Dialog>
 
       <div className="absolute inset-0 pointer-events-none">
-        <div className="w-full h-full bg-[url('/cracks-overlay.png')] bg-repeat opacity-20"></div>
+        <div className="w-full h-full opacity-20"></div>
       </div>
     </div>
   )
