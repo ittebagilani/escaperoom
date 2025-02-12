@@ -99,7 +99,7 @@ export default function EscapeRoom() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6">
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-orange-50">
       {showAdmin && (
         <Card className="absolute top-4 left-4 bg-stone-100/90 backdrop-blur-sm border-red-600/30">
           <CardHeader>
@@ -118,7 +118,7 @@ export default function EscapeRoom() {
         </Card>
       )}
 
-      <div className="bg-stone-100/80 backdrop-blur-sm p-8 rounded-lg shadow-lg border border-amber-600/30 max-w-md w-full space-y-6">
+      <div className="bg-orange-100/80 backdrop-blur-sm p-8 rounded-lg shadow-lg border border-amber-600/30 max-w-md w-full space-y-6">
         <h1 className="text-3xl font-bold text-center text-amber-800">Escape from the Market</h1>
         <div className="text-5xl font-mono text-center text-amber-900 flex items-center justify-center space-x-2">
           <Hourglass className="w-8 h-8" />
@@ -126,7 +126,7 @@ export default function EscapeRoom() {
         </div>
         <Button 
           onClick={startGame} 
-          className="w-full bg-amber-600 hover:bg-amber-700 text-white text-xl" 
+          className="w-full bg-amber-800 hover:bg-amber-700 text-white text-xl" 
           disabled={running}
         >
           Begin Your Escape
@@ -143,7 +143,7 @@ export default function EscapeRoom() {
         </div>
         <Button 
           onClick={checkCode} 
-          className="py-6 w-full bg-emerald-600 hover:bg-emerald-700 text-white text-2xl"
+          className="py-6 w-full bg-emerald-800 hover:bg-emerald-700 text-white text-2xl"
         >
           Unlock the Gate
         </Button>
