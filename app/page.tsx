@@ -7,24 +7,18 @@ import { Hourglass, LockKeyhole, Shield } from "lucide-react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 
-const generateRandomCode = () => {
-  return Math.floor(1000 + Math.random() * 9000).toString();
-}
-
 export default function EscapeRoom() {
   const [time, setTime] = useState(0)
   const [running, setRunning] = useState(false)
   const [code, setCode] = useState("")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [escapeSuccessful, setEscapeSuccessful] = useState(false)
-  const [correctCode, setCorrectCode] = useState(generateRandomCode())
+  const [correctCode, setCorrectCode] = useState("")
   const [showAdmin, setShowAdmin] = useState(false)
-  const [adminCode, setAdminCode] = useState("admin123")
   const [adminInput, setAdminInput] = useState("")
   const [adminDialogOpen, setAdminDialogOpen] = useState(false)
   const [isClient, setIsClient] = useState(false)
 
-  // Handle initial state loading from localStorage
   useEffect(() => {
     setIsClient(true)
     const savedTime = localStorage.getItem('escapeRoomTime')
@@ -36,7 +30,6 @@ export default function EscapeRoom() {
     if (savedCode) setCorrectCode(savedCode)
   }, [])
 
-  // Handle state persistence
   useEffect(() => {
     if (isClient) {
       localStorage.setItem('escapeRoomTime', time.toString())
@@ -45,7 +38,6 @@ export default function EscapeRoom() {
     }
   }, [time, running, correctCode, isClient])
 
-  // Timer effect
   useEffect(() => {
     let timer: NodeJS.Timeout
     if (running) {
@@ -66,7 +58,6 @@ export default function EscapeRoom() {
     if (code === correctCode) {
       setRunning(false)
       setEscapeSuccessful(true)
-      setCorrectCode(generateRandomCode())
     } else {
       setEscapeSuccessful(false)
     }
@@ -98,20 +89,12 @@ export default function EscapeRoom() {
   }
 
   const checkAdminCode = () => {
-    if (adminInput === adminCode) {
+    if (adminInput === "admin123") {
       setShowAdmin(true)
       setAdminDialogOpen(false)
       setAdminInput("")
     } else {
       setAdminInput("")
-    }
-  }
-
-  const handleGenerateNewCode = () => {
-    const newCode = generateRandomCode()
-    setCorrectCode(newCode)
-    if (isClient) {
-      localStorage.setItem('escapeRoomCorrectCode', newCode)
     }
   }
 
@@ -124,17 +107,11 @@ export default function EscapeRoom() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-sm font-mono">Current Code: {correctCode}</div>
-            <Button 
-              onClick={handleGenerateNewCode}
-              className="w-full bg-red-600 hover:bg-red-700"
-            >
-              Generate New Code
-            </Button>
             <Input
               type="text"
-              value={adminCode}
-              onChange={(e) => setAdminCode(e.target.value)}
-              placeholder="Set Admin Password"
+              value={correctCode}
+              onChange={(e) => setCorrectCode(e.target.value)}
+              placeholder="Set New Code"
               className="w-full"
             />
           </CardContent>
@@ -226,10 +203,6 @@ export default function EscapeRoom() {
           </div>
         </DialogContent>
       </Dialog>
-
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="w-full h-full opacity-20"></div>
-      </div>
     </div>
   )
 }
